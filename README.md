@@ -1,22 +1,15 @@
-vert-zeromq
+vertx-zeromq
 ===========
 
-![Build status](https://travis-ci.org/p14n/vert-zeromq.png)
+A ZeroMQ Event Bus bridge for Vert.x. This project is a Vert.x 3.x port of Dean Pehrsson-Chapman's [vert-zeromq project](https://github.com/p14n/vert-zeromq), which is Vert.x 2.x only. 
 
-Providing a bridge from zero-mq to the vert-x event bus.
+The ZeroMQ bridge enables you to remotely call a handler on the Vert.x Event Bus using a ZeroMQ socket, receive replies, and reply back. It also allows you to register a ZeroMQ socket as a Vert.x Event Bus handler, receive calls to that Event Bus address on the ZeroMQ socket, and reply back.
 
-Available in the module registry as p14n~vert-zeromq~1.0.0.  This release is production ready, and requires vert.x 2.1 final.
+If a reply handler was supplied by the sender of the message received at the socket, that handler's address is included as the second frame of the message.
 
-This module enables you to remotely call a handler on the bus, receive replies, and reply back.  It also allows you
-to register a 0mq socket as a handler, receive calls to that handler address, and reply back.
+*NOTE: you cannot currently reply to a ZeroMQ socket that has registered as a handler (although it can reply to you).*
 
-
-If a reply handler was supplied by the sender of the message received at the socket,
-that handler's address is included as the second frame of the message.
-
-NOTE - you cannot currently reply to a 0mq socket that has registered as a handler (although it can reply to you).
-
-Config requires the address the module should listen on:
+The Bridge is started by deploying the `ZeroMQBridgeVerticle`. The verticle requires the address the module should listen on as part of its `DeploymentOptions` config:
 
 ```json
 {
@@ -26,8 +19,8 @@ Config requires the address the module should listen on:
 
 * Send a message to an event bus handler by sending the handler address as the first frame, the message as the second.
 * Reply to a handler by using its address (provided in the second frame of the message).
-* Register a 0mq handler by sending a single message 'register:myHandlerName'
-* Unregister a 0mq handler by sending a single message 'unregister:myHandlerName'.
+* Register a ZeroMQ handler by sending a single message 'register:myHandlerName'
+* Unregister a ZeroMQ handler by sending a single message 'unregister:myHandlerName'.
 
 
 ### Calling an event bus handler
@@ -48,28 +41,40 @@ Assert.assertEquals("hello", new String(response));
 ```java
 String address = "tcp://localhost:5558";
 ZMQ.Context ctx = ZMQ.context(1);
+final String msg = "message 1";
+final String msg2 = "message 2";
+final String channel = "testHandler";
 
-ZMQ.Socket registered = ctx.socket(ZMQ.DEALER); //This will be our handler
+// Register a ZMQ socket as a handler for an Event Bus address
+ZMQ.Socket registered = ctx.socket(ZMQ.DEALER); // This will be our handler
 registered.connect(address);
-registered.send("register:testHandler".getBytes()); //Register this socket as handler 'testHandler'
+registered.send(("register:" + channel).getBytes()); // Register this socket as EB channel 'testHandler'
 
-Thread.sleep(100); //Messages sent immediately could be dropped in the bus
+Thread.sleep(100); // Messages sent immediately could be dropped in the bus
 
-ZMQ.Socket client = ctx.socket(ZMQ.DEALER); //This socket will call our handler socket
+// Use another Socker to send a message to the ZeroMQ Bridge, 
+// which will forward it to the handler we registered above.
+ZMQ.Socket client = ctx.socket(ZMQ.DEALER);
 client.connect(address);
-client.send("testHandler".getBytes(), ZMQ.SNDMORE); //Send the handler address
-client.send("oh".getBytes(), 0); //Send the message
+client.send(channel.getBytes(), ZMQ.SNDMORE); // Send the handler address
+client.send(msg.getBytes(), 0); //Send the message
 
-byte[] response = registered.recv(); //Get the message sent to the handler socket by the client 'oh'
-byte[] replyaddress = registered.recv(); //Get the client socket's handler address
-assertEquals("oh", new String(response));
+// Get the message sent by the client, which was forwared to us
+// by the Bridge. The second frame contains an address we can use
+// to reply to the client.
+byte[] response = registered.recv();
+byte[] replyaddress = registered.recv();
+assertEquals(msg, new String(response));
 
-registered.send(replyaddress, ZMQ.SNDMORE); //Send the address of the client socket
-registered.send("hai".getBytes(), 0); //Send a reply message
+// Send Reply to the client, via the Bridge.
+registered.send(replyaddress, ZMQ.SNDMORE); // Send the address of the client socket
+registered.send(msg2.getBytes(), 0); // Send a reply message
 
-byte[] response3 = client.recv(); //Get the response sent to the client by the handler socket
-assertEquals("hai", new String(response3));
+// Get the reply sent to the client socket.
+byte[] response3 = client.recv(); // Get the response sent to the client by the handler socket
+assertEquals(msg2, new String(response3));
+
 ```
 ---
-For more on 0mq, see the excellent guide at <http://zguide.zeromq.org/page:all>
+For more on ZeroMQ, see the excellent guide at <http://zguide.zeromq.org/page:all>
 

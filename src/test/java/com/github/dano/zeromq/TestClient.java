@@ -1,4 +1,4 @@
-package com.p14n.zeromq;
+package com.github.dano.zeromq;
 
 import org.zeromq.ZMQ;
 
