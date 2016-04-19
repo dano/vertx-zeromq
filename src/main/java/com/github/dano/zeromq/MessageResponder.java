@@ -69,7 +69,8 @@ public class MessageResponder {
   /**
    * Create the PUSH socket used to send the response
    * back to the blocking 0MQ thread.
-   * @return
+   *
+   * @return The response socket.
    */
   private ZMQ.Socket getReplySocket() {
     ZMQ.Socket sock = ctx.socket(ZMQ.PUSH);

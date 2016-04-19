@@ -22,7 +22,10 @@ import io.vertx.core.logging.LoggerFactory;
 
 /**
  * The ZeroMQ bridge.
- * TODO add more.
+ *
+ * Once started, the bridge forwards ZeroMQ requests to the Vert.x
+ * Event Bus, and sends responses back to the requester. It also
+ * allows ZMQ Sockets to act as Vert.x Event Bus listeners.
  */
 public class ZeroMQBridge extends AsyncRouter {
 
