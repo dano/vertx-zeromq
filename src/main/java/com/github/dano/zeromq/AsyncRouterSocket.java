@@ -27,8 +27,6 @@ public class AsyncRouterSocket implements Runnable {
   private String backendAddress;
   private boolean running = true;
   private ZMQ.Context ctx;
-  private final Vertx vertx;
-  private final String queueChannel;
   private CountDownLatch shutdownLatch = new CountDownLatch(1);
   private final BiConsumer<InMessage, MessageResponder> handleBlockingRequest;
 
@@ -40,13 +38,10 @@ public class AsyncRouterSocket implements Runnable {
    * @param backendAddress The address to use for the backend.
    */
   public AsyncRouterSocket(ZMQ.Context ctx, String frontendAddress, String backendAddress,
-                           Vertx vertx, String queueChannel,
                            BiConsumer<InMessage, MessageResponder> handleBlockingRequest) {
     this.frontendAddress = frontendAddress;
     this.backendAddress = backendAddress;
     this.ctx = ctx;
-    this.vertx = vertx;
-    this.queueChannel = queueChannel;
     this.handleBlockingRequest = handleBlockingRequest;
   }
 
@@ -62,7 +57,7 @@ public class AsyncRouterSocket implements Runnable {
     server.bind(frontendAddress);
 
     ZMQ.Socket pull = ctx.socket(ZMQ.PULL);
-    pull.connect(backendAddress);
+    pull.bind(backendAddress);
 
     ZMQ.Poller poller = new ZMQ.Poller(2);
     poller.register(server, ZMQ.Poller.POLLIN);
@@ -74,7 +69,7 @@ public class AsyncRouterSocket implements Runnable {
       if (poller.pollin(0)) {
         InMessage msg = InMessage.fromSocket(server);
         // Broker it
-        handleBlockingRequest.accept(msg, new MessageResponder(msg.getId(), vertx, queueChannel));
+        handleBlockingRequest.accept(msg, new MessageResponder(msg.getId(), ctx, backendAddress));
       }
 
       if (poller.pollin(1)) {

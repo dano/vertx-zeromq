@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.eventbus.ReplyException;
@@ -34,6 +34,8 @@ public class ZeroMQBridge extends AsyncRouter {
 
   private final Map<String, MessageConsumer<byte[]>> zmqHandlers = new HashMap<>();
   private final Set<byte[]> handlerSocketIds = new HashSet<>();
+  private final Vertx vertx;
+  private final long responseTimeout;
 
   /**
    * Create a ZeroMQBridge.
@@ -55,39 +57,50 @@ public class ZeroMQBridge extends AsyncRouter {
    *                        for a given request.
    */
   public ZeroMQBridge(String address, Vertx vertx, final long responseTimeout) {
-    super(address, vertx);
-    setRequestHandler((inMessage, responder) -> {
-      LOG.debug("Got msg {0}", inMessage);
-      if (inMessage.isControl()) {
-        handleCommand(inMessage, responder);
+    super(address);
+    this.vertx = vertx;
+    this.responseTimeout = responseTimeout;
+  }
+
+  @Override
+  protected void handleRequest(InMessage inMessage, MessageResponder responder) {
+    LOG.debug("Got msg {0}", inMessage);
+    if (inMessage.isControl()) {
+      handleCommand(inMessage, responder);
+    } else {
+      if (handlerSocketIds.contains(responder.getSocketId())) {
+        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getMsg());
       } else {
-        if (handlerSocketIds.contains(responder.getSocketId())) {
-          eventBus().send(inMessage.getAddressAsString(), inMessage.getMsg());
-        } else {
-          DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
-          eventBus().<byte[]>send(new String(inMessage.getAddress()), inMessage.getMsg(), options,
-              event -> {
-                  if (event.succeeded()) {
-                    Message<byte[]> msg = event.result();
-                    String replyAddress = msg.replyAddress();
-                    if (replyAddress == null) {
-                      responder.respond(msg.body());
-                    } else {
-                      responder.respond(msg.body(), replyAddress.getBytes());
-                    }
-                  } else {
-                    if (event.cause() instanceof ReplyException) {
-                      ReplyException ex = (ReplyException) event.cause();
-                      if (ReplyFailure.NO_HANDLERS.equals(ex.failureType())) {
-                        LOG.error("Send failed", event.cause());
-                        responder.respond(ex.failureType().name().getBytes());
-                      }
-                    }
-                  }
+        DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
+        vertx.eventBus().<byte[]>send(inMessage.getAddressAsString(), inMessage.getMsg(), options,
+            event -> {
+              if (event.succeeded()) {
+                sendSuccessResponse(event.result(), responder);
+              } else {
+                sendFailureResponse(responder, event);
+              }
             });
-        }
       }
-    });
+    }
+  }
+
+  private void sendSuccessResponse(Message<byte[]> msg, MessageResponder responder) {
+    String replyAddress = msg.replyAddress();
+    if (replyAddress == null) {
+      responder.respond(msg.body());
+    } else {
+      responder.respond(msg.body(), replyAddress.getBytes());
+    }
+  }
+
+  private void sendFailureResponse(MessageResponder responder, AsyncResult<Message<byte[]>> event) {
+    if (event.cause() instanceof ReplyException) {
+      ReplyException ex = (ReplyException) event.cause();
+      if (ReplyFailure.NO_HANDLERS.equals(ex.failureType())) {
+        LOG.error("Send failed", event.cause());
+        responder.respond(ex.failureType().name().getBytes());
+      }
+    }
   }
 
   /**
@@ -126,7 +139,7 @@ public class ZeroMQBridge extends AsyncRouter {
    */
   private void register(String address, byte[] socketId, Handler<Message<byte[]>> handler) {
     handlerSocketIds.add(socketId);
-    MessageConsumer<byte[]> consumer = eventBus().consumer(address, handler);
+    MessageConsumer<byte[]> consumer = vertx.eventBus().consumer(address, handler);
     zmqHandlers.put(address, consumer);
   }
 
@@ -144,9 +157,5 @@ public class ZeroMQBridge extends AsyncRouter {
         LOG.debug("Unregistered 0mq handler {0}", address);
       });
     }
-  }
-
-  private EventBus eventBus() {
-    return vertx.eventBus();
   }
 }

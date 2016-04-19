@@ -20,8 +20,12 @@ public class AsyncRouterTest {
   @Before
   public void before() {
     Vertx vertx = Vertx.vertx();
-    echo = new AsyncRouter("tcp://*:5558", vertx)
-        .setRequestHandler((message, responder) -> responder.respond(message.getMsg()));
+    echo = new AsyncRouter("tcp://*:5558") {
+      @Override
+      protected void handleRequest(InMessage message, MessageResponder responder) {
+        responder.respond(message.getMsg());
+      }
+    };
     vertx.eventBus().registerDefaultCodec(InMessage.class, new InMessageCodec());
     vertx.eventBus().registerDefaultCodec(OutMessage.class, new OutMessageCodec());
     echo.start();

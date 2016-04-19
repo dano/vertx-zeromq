@@ -2,56 +2,50 @@ package com.github.dano.zeromq;
 
 import org.zeromq.ZMQ;
 
-import java.util.UUID;
-
-import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 /**
- * TODO comment me.
+ * A ZeroMQ Router.
+ *
+ * Creates a ZeroMQ Context and an AsyncRouterSocket, which builds
+ * ZMQ Sockets using that Context. The AsyncRouterSocket listens for
+ * ZMQ connections to a provided address, and forwards them on to
+ * a request handler provided to the router.
+ *
+ * The AsyncRouterSocket also listens for outgoing messages on an
+ * internal address, which it then sends back out to reply to
+ * external clients.
  */
-public class AsyncRouter {
+public abstract class AsyncRouter {
 
   private static final String INPROC_ZMQ_ASYNC_BACKEND = "inproc://zmq-async-backend";
   private Logger LOG = LoggerFactory.getLogger(AsyncRouter.class);
 
-  private QueueListeningPublishSocket back;
   private AsyncRouterSocket front;
   private ZMQ.Context ctx;
   private final String address;
-  private RequestHandler handler;
-  protected final Vertx vertx;
 
-  public AsyncRouter(String address, Vertx vertx) {
+  public AsyncRouter(String address) {
     this.address = address;
-    this.vertx = vertx;
   }
 
-  protected AsyncRouter setRequestHandler(RequestHandler handler) {
-    this.handler = handler;
-    return this;
-  }
+  /**
+   * Handle an incoming request over the external 0MQ socket.
+   *
+   * @param message The incoming message.
+   * @param responder The responder, used to send a response to the request.
+   */
+  protected abstract void handleRequest(InMessage message, MessageResponder responder);
 
   public AsyncRouter start() {
     ctx = ZMQ.context(2);
-    String queueChannel = "myInternalChannel" + UUID.randomUUID().toString();
-    front = new AsyncRouterSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND,
-        vertx, queueChannel, (msg, messageResponder) -> {
-            if (handler != null) {
-              handler.handleRequest(msg, messageResponder);
-            }
-        });
-    back = new QueueListeningPublishSocket(ctx, INPROC_ZMQ_ASYNC_BACKEND,
-        vertx, queueChannel);
-    run(front);
+    front = new AsyncRouterSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND, this::handleRequest);
+    new Thread(front).start();
     return this;
   }
 
   public AsyncRouter stop() {
-    if (back != null) {
-      back.stop();
-    }
     if (front != null) {
       front.stop();
     }
@@ -59,9 +53,5 @@ public class AsyncRouter {
       ctx.term();
     }
     return this;
-  }
-
-  private void run(Runnable runnable) {
-    new Thread(runnable).start();
   }
 }
