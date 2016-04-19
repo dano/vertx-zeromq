@@ -4,7 +4,14 @@ package com.github.dano.zeromq;
 import org.zeromq.ZMQ;
 
 /**
- * Represents a message received from a 0MQ client.
+ * Represents a message received from a 0MQ client. There are two
+ * flavors of incoming messages:
+ * 1) A Control message. This is not a message meant for an Event Bus
+ *    channel, but instead is meant for the ZeroMQ bridge itself. The
+ *    register and unregister commands are the only control messages,
+ *    currently. These messages have only an id and message body.
+ * 2) Normal messages. These have an id, a destination address, and a
+ *    message body.
  */
 public class InMessage {
   private byte[] id;
@@ -36,7 +43,7 @@ public class InMessage {
    * Create a InMessage for a standard (non-control) message.
    *
    * @param id The internal ID of the message.
-   * @param address The reply address.
+   * @param address The destination Event Bus address.
    * @param msg The message contents.
    */
   public InMessage(byte[] id, byte[] address, byte[] msg) {
@@ -108,9 +115,10 @@ public class InMessage {
   }
 
   /**
-   * Get the reply address of the InMessage.
+   * Get the destination address of the InMessage.
    *
-   * @return The address the message was sent to. Can be null.
+   * @return The address the message was sent to. Can be null,
+   * if the message is a control message.
    */
   public byte[] getAddress() {
     return address;
