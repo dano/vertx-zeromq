@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeoutException;
 
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
@@ -19,15 +18,12 @@ public class AsyncRouterTest {
 
   @Before
   public void before() {
-    Vertx vertx = Vertx.vertx();
     echo = new AsyncRouter("tcp://*:5558") {
       @Override
       protected void handleRequest(InMessage message, MessageResponder responder) {
         responder.respond(message.getMsg());
       }
     };
-    vertx.eventBus().registerDefaultCodec(InMessage.class, new InMessageCodec());
-    vertx.eventBus().registerDefaultCodec(OutMessage.class, new OutMessageCodec());
     echo.start();
   }
 

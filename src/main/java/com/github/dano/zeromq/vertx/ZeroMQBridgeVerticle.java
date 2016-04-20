@@ -1,10 +1,5 @@
 package com.github.dano.zeromq.vertx;
 
-import com.github.dano.zeromq.InMessage;
-import com.github.dano.zeromq.OutMessage;
-import com.github.dano.zeromq.InMessageCodec;
-import com.github.dano.zeromq.OutMessageCodec;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -21,8 +16,6 @@ public class ZeroMQBridgeVerticle extends AbstractVerticle {
 
   @Override
   public void start() {
-    vertx.eventBus().registerDefaultCodec(InMessage.class, new InMessageCodec());
-    vertx.eventBus().registerDefaultCodec(OutMessage.class, new OutMessageCodec());
 
     String address = config().getString("address", DEFAULT_ADDRESS);
     long timeout = config().getLong("timeout", DEFAULT_TIMEOUT);

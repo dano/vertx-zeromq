@@ -5,7 +5,6 @@ import org.zeromq.ZMQ;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.BiConsumer;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
