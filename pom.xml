@@ -10,18 +10,20 @@
   <description>a Vert.x ZeroMQ bridge</description>
   <url>https://github.com/dano/vertx-zeromq</url>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
-  </parent>
-
   <scm>
     <connection>scm:git:https://github.com/dano/vertx-zeromq</connection>
     <developerConnection>scm:git:git@github.com:dano/vertx-zeromq</developerConnection>
     <url>https://github.com/dano/vertx-zeromq</url>
     <tag>HEAD</tag>
   </scm>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,6 +37,7 @@
       <id>dano</id>
       <email>oreilldf@gmail.com</email>
       <name>Dan O'Reilly</name>
+      <organizationUrl>https://github.com/dano</organizationUrl>
     </developer>
   </developers>
 

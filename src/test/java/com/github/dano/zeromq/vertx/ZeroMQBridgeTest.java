@@ -1,5 +1,6 @@
 package com.github.dano.zeromq.vertx;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.zeromq.ZMQ;
@@ -16,16 +17,22 @@ import static org.junit.Assert.assertEquals;
 public class ZeroMQBridgeTest {
   public static final String ADDRESS = "tcp://localhost:5558";
   private Vertx vertx;
+  ZeroMQBridge bridge;
 
   @Before
   public void before() {
     vertx = Vertx.vertx();
+    bridge = new ZeroMQBridge(ADDRESS, vertx);
   }
-  @Test
+  @After
+  public void after() {
+    bridge.stop();
+  }
+
+  @Test(timeout = 6000L)
   public void testRegisterAndUnregister() {
     final String testChannel = "testChannel";
 
-    ZeroMQBridge bridge = new ZeroMQBridge(ADDRESS, vertx);
     bridge.start();
     ZMQ.Context ctx = ZMQ.context(1);
     ZMQ.Socket listener = ctx.socket(ZMQ.DEALER);
@@ -59,8 +66,6 @@ public class ZeroMQBridgeTest {
 
     response = client.recv();
     assertEquals("NO_HANDLERS", new String(response));
-    bridge.stop();
-
   }
 
 }
