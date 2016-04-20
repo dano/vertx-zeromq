@@ -35,6 +35,7 @@ public class AsyncRouterSocket implements Runnable {
    * @param ctx The ZMQ socket to use.
    * @param frontendAddress The address to use for the frontend.
    * @param backendAddress The address to use for the backend.
+   * @param handleBlockingRequest The function to use to handle received requests.
    */
   public AsyncRouterSocket(ZMQ.Context ctx, String frontendAddress, String backendAddress,
                            BiConsumer<InMessage, MessageResponder> handleBlockingRequest) {

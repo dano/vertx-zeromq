@@ -92,7 +92,7 @@ public class ZeroMQBridgeVerticleTest {
     registered.send((ZeroMQBridge.REGISTER + channelName).getBytes());
 
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }

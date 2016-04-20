@@ -39,7 +39,7 @@ public class ZeroMQBridgeTest {
     listener.connect(ADDRESS);
     listener.send((REGISTER + testChannel).getBytes());
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -56,7 +56,7 @@ public class ZeroMQBridgeTest {
 
     listener.send((UNREGISTER + testChannel).getBytes());
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }

@@ -47,7 +47,7 @@ public class OutMessage {
   }
 
   /**
-   * Build an outoing message from a ZMQ.socket. The socket
+   * Build an outgoing message from a ZMQ.socket. The socket
    * is read until there are no more frames waiting. The
    * method assumes there will be either two or three frames:
    * 1) The socket id
@@ -55,7 +55,7 @@ public class OutMessage {
    * 3) The reply address (optional)
    *
    * @param socket The socket to read from.
-   * @return
+   * @return An instance of this, so the API can be used fluently.
    */
   public static OutMessage fromSocket(ZMQ.Socket socket) {
     byte[] id = socket.recv(0);
@@ -83,7 +83,7 @@ public class OutMessage {
   /**
    * Get the message contents.
    *
-   *  @return The message.
+   * @return The message.
    */
   public byte[] getMsg() {
     return msg;
@@ -100,7 +100,7 @@ public class OutMessage {
 
   /**
    * Returns true if this OutMessage has a reply address.
-   * @return
+   * @return true if the OutMessage has a replay address, otherwise false.
    */
   public boolean isRepliable() {
     return type.equals(OutMessageType.REPLIABLE);
