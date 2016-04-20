@@ -97,12 +97,12 @@ public class ZeroMQBridge extends AsyncRouter {
   }
 
   private void sendFailureResponse(MessageResponder responder, AsyncResult<Message<byte[]>> event) {
+    LOG.error("Send failed", event.cause());
     if (event.cause() instanceof ReplyException) {
       ReplyException ex = (ReplyException) event.cause();
-      if (ReplyFailure.NO_HANDLERS.equals(ex.failureType())) {
-        LOG.error("Send failed", event.cause());
-        responder.respond(ex.failureType().name().getBytes());
-      }
+      responder.respond(ex.failureType().name().getBytes());
+    } else {
+      responder.respond(("Unknown error: " + event.cause().getMessage()).getBytes());
     }
   }
 
