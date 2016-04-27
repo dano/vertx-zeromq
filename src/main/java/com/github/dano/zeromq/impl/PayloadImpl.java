@@ -8,7 +8,7 @@ package com.github.dano.zeromq.impl;
 import com.github.dano.zeromq.Payload;
 
 /**
- * TODO comment me
+ * A Payload implementation.
  */
 public class PayloadImpl implements Payload {
 
@@ -19,6 +19,11 @@ public class PayloadImpl implements Payload {
   }
 
   public byte[] getMsg() {
+    return msg;
+  }
+
+  @Override
+  public byte[] getControlMsg() {
     return msg;
   }
 }
