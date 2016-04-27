@@ -5,6 +5,7 @@
  */
 package com.github.dano.zeromq.impl;
 
+import com.github.dano.zeromq.AsyncRouterSocket;
 import com.github.dano.zeromq.InMessage;
 import com.github.dano.zeromq.InMessageFactory;
 import com.github.dano.zeromq.MessageResponder;
@@ -27,9 +28,9 @@ import io.vertx.core.logging.LoggerFactory;
  * messages already received from an external client, and
  * send them back out to the client.
  */
-public class AsyncRouterSocket implements Runnable {
+public class AsyncRouterSocketImpl implements AsyncRouterSocket {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AsyncRouterSocket.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AsyncRouterSocketImpl.class);
 
   private String frontendAddress;
   private String backendAddress;
@@ -41,7 +42,7 @@ public class AsyncRouterSocket implements Runnable {
   private final BiConsumer<InMessage, MessageResponder> handleBlockingRequest;
 
   /**
-   * Create a AsyncRouterSocket.
+   * Create a AsyncRouterSocketImpl.
    *
    * @param ctx The ZMQ socket to use.
    * @param frontendAddress The address to use for the frontend.
@@ -50,7 +51,7 @@ public class AsyncRouterSocket implements Runnable {
    * @param outMessageFactory A factory for creating OutMessages.
    * @param handleBlockingRequest The function to use to handle received requests.
    */
-  public AsyncRouterSocket(ZMQ.Context ctx, String frontendAddress, String backendAddress,
+  public AsyncRouterSocketImpl(ZMQ.Context ctx, String frontendAddress, String backendAddress,
                            InMessageFactory inMessageFactory,
                            OutMessageFactory outMessageFactory,
                            BiConsumer<InMessage, MessageResponder> handleBlockingRequest) {
@@ -103,6 +104,7 @@ public class AsyncRouterSocket implements Runnable {
   /**
    * Stop the socket.
    */
+  @Override
   public void stop() {
     this.running = false;
     try {

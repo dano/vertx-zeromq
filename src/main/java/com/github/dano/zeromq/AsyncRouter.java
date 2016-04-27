@@ -1,10 +1,12 @@
 package com.github.dano.zeromq;
 
-import com.github.dano.zeromq.impl.AsyncRouterSocket;
+import com.github.dano.zeromq.impl.AsyncRouterSocketImpl;
 import org.zeromq.ZMQ;
 
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import java.util.function.BiConsumer;
 
 /**
  * A ZeroMQ Router.
@@ -56,10 +58,29 @@ public abstract class AsyncRouter {
    */
   public AsyncRouter start() {
     ctx = ZMQ.context(2);
-    front = new AsyncRouterSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND, inMessageFactory,
-                                  outMessageFactory, this::handleRequest);
+    front = createZmqSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND, inMessageFactory,
+        outMessageFactory, this::handleRequest);
     new Thread(front).start();
     return this;
+  }
+
+  /**
+   * Create the AsyncRouterSocket.
+   *
+   * @param ctx The ZMQ socket to use.
+   * @param frontendAddress The address to use for the frontend.
+   * @param backendAddress The address to use for the backend.
+   * @param inMessageFactory A factory for creating InMessages.
+   * @param outMessageFactory A factory for creating OutMessages.
+   * @param handleBlockingRequest The function to use to handle received requests.
+   * @return The AsyncRouterSocket.
+   */
+  protected AsyncRouterSocket createZmqSocket(ZMQ.Context ctx, String frontendAddress,
+      String backendAddress, InMessageFactory inMessageFactory,
+      OutMessageFactory outMessageFactory,
+      BiConsumer<InMessage, MessageResponder> handleBlockingRequest) {
+    return new AsyncRouterSocketImpl(ctx, frontendAddress, backendAddress,
+        inMessageFactory, outMessageFactory, handleBlockingRequest);
   }
 
   /**
