@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An abstract class that provides registration/unregistration
- * mechanisms for a ZeroMQ bridge.
+ * An abstract class that provides event bus registration/unregistration
+ * mechanisms for ZeroMQ sockets.
  */
 public abstract class BaseZeroMQBridge extends AsyncRouter {
 
