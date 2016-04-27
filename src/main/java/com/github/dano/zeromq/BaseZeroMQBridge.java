@@ -5,13 +5,6 @@
  */
 package com.github.dano.zeromq;
 
-import com.github.dano.zeromq.AsyncRouter;
-import com.github.dano.zeromq.InMessage;
-import com.github.dano.zeromq.InMessageFactory;
-import com.github.dano.zeromq.MessageResponder;
-import com.github.dano.zeromq.OutMessageFactory;
-import com.github.dano.zeromq.Payload;
-import com.github.dano.zeromq.impl.ZeroMQBridge;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
@@ -30,7 +23,7 @@ import java.util.Set;
  */
 public abstract class BaseZeroMQBridge extends AsyncRouter {
 
-  private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridge.class);
+  private final static Logger LOG = LoggerFactory.getLogger(BaseZeroMQBridge.class);
 
   public final static String REGISTER = "register:";
   private final static int REG_LENGTH = REGISTER.length();

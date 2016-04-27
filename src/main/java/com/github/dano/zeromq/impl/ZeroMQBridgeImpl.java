@@ -24,9 +24,9 @@ import io.vertx.core.logging.LoggerFactory;
  * Event Bus, and sends responses back to the requester. It also
  * allows ZMQ Sockets to act as Vert.x Event Bus listeners.
  */
-public class ZeroMQBridge extends BaseZeroMQBridge {
+public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
 
-  private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridge.class);
+  private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridgeImpl.class);
 
   private final long responseTimeout;
 
@@ -36,7 +36,7 @@ public class ZeroMQBridge extends BaseZeroMQBridge {
    * @param address The address to listen on.
    * @param vertx The vertx instance.
    */
-  public ZeroMQBridge(String address, Vertx vertx) {
+  public ZeroMQBridgeImpl(String address, Vertx vertx) {
     this(address, vertx, 5000);
   }
 
@@ -49,7 +49,7 @@ public class ZeroMQBridge extends BaseZeroMQBridge {
    *                        wait for a reply from the event bus listener
    *                        for a given request.
    */
-  public ZeroMQBridge(String address, Vertx vertx, final long responseTimeout) {
+  public ZeroMQBridgeImpl(String address, Vertx vertx, final long responseTimeout) {
     super(vertx, address, new InMessageFactoryImpl(), new OutMessageFactoryImpl());
     this.responseTimeout = responseTimeout;
     vertx.eventBus().registerCodec(new PayloadImplMessageCodec());

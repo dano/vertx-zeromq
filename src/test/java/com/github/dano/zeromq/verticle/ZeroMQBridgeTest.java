@@ -1,6 +1,7 @@
 package com.github.dano.zeromq.verticle;
 
-import com.github.dano.zeromq.impl.ZeroMQBridge;
+import com.github.dano.zeromq.BaseZeroMQBridge;
+import com.github.dano.zeromq.impl.ZeroMQBridgeImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +9,8 @@ import org.zeromq.ZMQ;
 
 import io.vertx.core.Vertx;
 
-import static com.github.dano.zeromq.impl.ZeroMQBridge.REGISTER;
-import static com.github.dano.zeromq.impl.ZeroMQBridge.UNREGISTER;
+import static com.github.dano.zeromq.BaseZeroMQBridge.REGISTER;
+import static com.github.dano.zeromq.BaseZeroMQBridge.UNREGISTER;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -18,12 +19,12 @@ import static org.junit.Assert.assertEquals;
 public class ZeroMQBridgeTest {
   public static final String ADDRESS = "tcp://localhost:5558";
   private Vertx vertx;
-  ZeroMQBridge bridge;
+  BaseZeroMQBridge bridge;
 
   @Before
   public void before() {
     vertx = Vertx.vertx();
-    bridge = new ZeroMQBridge(ADDRESS, vertx);
+    bridge = new ZeroMQBridgeImpl(ADDRESS, vertx);
   }
   @After
   public void after() {
