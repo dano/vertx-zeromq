@@ -9,7 +9,4 @@ package com.github.dano.zeromq;
  * TODO comment me
  */
 public interface Payload {
-
-  public byte[] getControlMsg();
-
 }

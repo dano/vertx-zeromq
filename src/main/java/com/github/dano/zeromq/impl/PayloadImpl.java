@@ -21,9 +21,4 @@ public class PayloadImpl implements Payload {
   public byte[] getMsg() {
     return msg;
   }
-
-  @Override
-  public byte[] getControlMsg() {
-    return msg;
-  }
 }
