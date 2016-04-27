@@ -28,9 +28,9 @@ public class InMessageFactoryImpl implements InMessageFactory {
     // Frame two might be the message, or the reply address.
     byte[] frame2 = socket.recv();
     if (socket.hasReceiveMore()) {
-      return new InMessageImpl(id, frame2, socket.recv(0));
+      return new InMessageImpl(id, frame2, new PayloadImpl(socket.recv(0)));
     } else {
-      return new InMessageImpl(id, frame2);
+      return new InMessageImpl(id, new PayloadImpl((frame2)));
     }
   }
 }

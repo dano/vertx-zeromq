@@ -45,7 +45,7 @@ public class MessageResponder {
    *
    * @param msg The message body.
    */
-  public void respond(byte[] msg) {
+  public void respond(Payload msg) {
     ZMQ.Socket sock = getReplySocket();
     try {
       outMessageFactory.fromIdMsg(id, msg).sendMessage(sock);
@@ -57,13 +57,13 @@ public class MessageResponder {
   /**
    * Respond with a message body and a reply address.
    *
-   * @param msg The message body.
+   * @param payload The message body.
    * @param address The reply address.
    */
-  public void respond(byte[] msg, byte[] address) {
+  public void respond(Payload payload, byte[] address) {
     ZMQ.Socket sock = getReplySocket();
     try {
-      outMessageFactory.fromIdMsgAddress(id, msg, address).sendMessage(sock);
+      outMessageFactory.fromIdMsgAddress(id, payload, address).sendMessage(sock);
     } finally {
       sock.close();
     }

@@ -14,9 +14,9 @@ import static org.junit.Assert.assertTrue;
  * Test InMessageImpl.
  */
 public class InMessageTest {
-  private static final byte [] ID = "id".getBytes();
-  private static final byte [] MSG = "test msg".getBytes();
-  private static final byte [] ADDRESS = "testAddress".getBytes();
+  private static final byte[] ID = "id".getBytes();
+  private static final PayloadImpl MSG = new PayloadImpl("test msg".getBytes());
+  private static final byte[] ADDRESS = "testAddress".getBytes();
   private static final String ADDR = "tcp://localhost:5558";
   ZMQ.Context ctx;
   ZMQ.Socket push;
@@ -62,7 +62,7 @@ public class InMessageTest {
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
-    assertEquals(new String(MSG), new String(pull.recv()));
+    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
     assertFalse(pull.hasReceiveMore());
 
   }
@@ -74,7 +74,7 @@ public class InMessageTest {
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
     assertEquals(new String(ADDRESS), new String(pull.recv()));
-    assertEquals(new String(MSG), new String(pull.recv()));
+    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
     assertFalse(pull.hasReceiveMore());
   }
 }

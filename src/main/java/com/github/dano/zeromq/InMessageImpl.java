@@ -15,7 +15,7 @@ import org.zeromq.ZMQ;
  */
 public class InMessageImpl implements InMessage {
   private byte[] id;
-  private byte[] msg;
+  private PayloadImpl payload;
   private byte[] address;
   private InMessageType type;
 
@@ -25,31 +25,29 @@ public class InMessageImpl implements InMessage {
   }
 
   /**
-   * Create a InMessageImpl with just an id and msg. This is
+   * Create a InMessageImpl with just an id and payload. This is
    * treated as a "control" message, and isn't forwarded
    * to an EventBus channel.
-   *
-   * @param id The id
-   * @param msg The message.
+   *  @param id The id
+   * @param payload The payload.
    */
-  InMessageImpl(byte[] id, byte[] msg) {
+  InMessageImpl(byte[] id, PayloadImpl payload) {
     this.id = id;
-    this.msg = msg;
+    this.payload = payload;
     this.address = null;
     type = InMessageType.CONTROL;
   }
 
   /**
    * Create a InMessageImpl for a standard (non-control) message.
-   *
-   * @param id The internal ID of the message.
+   *  @param id The internal ID of the message.
    * @param address The destination Event Bus address.
-   * @param msg The message contents.
+   * @param payload The message contents.
    */
-  InMessageImpl(byte[] id, byte[] address, byte[] msg) {
+  InMessageImpl(byte[] id, byte[] address, PayloadImpl payload) {
     this.id = id;
     this.address = address;
-    this.msg = msg;
+    this.payload = payload;
     type = InMessageType.MESSAGE;
   }
 
@@ -63,7 +61,7 @@ public class InMessageImpl implements InMessage {
     if (!isControl()) {
       socket.send(address, ZMQ.SNDMORE);
     }
-    socket.send(msg, 0);
+    socket.send(payload.getMsg(), 0);
   }
 
   /**
@@ -89,8 +87,16 @@ public class InMessageImpl implements InMessage {
    *
    * @return The message contents.
    */
-  public byte[] getPayload() {
-    return msg;
+  public Payload getPayload() {
+    return payload;
+  }
+
+  @Override
+  public byte[] getControlMessage() throws IllegalStateException {
+    if (!isControl()) {
+      throw new IllegalStateException("Not a control message");
+    }
+    return payload.getMsg();
   }
 
   /**
@@ -117,7 +123,7 @@ public class InMessageImpl implements InMessage {
     return "InMessageImpl{" +
         "id=" + ((id == null) ? null : new String(id)) +
         ", address=" + ((address == null) ? null : new String(address)) +
-        ", msg=" + ((msg == null) ? null : new String(msg)) +
+        ", msg=" + ((payload == null) ? null : new String(payload.getMsg())) +
         ", type=" + type +
         '}';
   }

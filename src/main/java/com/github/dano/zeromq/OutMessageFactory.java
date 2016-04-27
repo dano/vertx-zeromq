@@ -14,7 +14,7 @@ public interface OutMessageFactory {
 
   OutMessage fromSocket(ZMQ.Socket socket);
 
-  OutMessage fromIdMsg(byte[] id, byte[] msg);
+  OutMessage fromIdMsg(byte[] id, Payload msg);
 
-  OutMessage fromIdMsgAddress(byte[] id, byte[] msg, byte[] address);
+  OutMessage fromIdMsgAddress(byte[] id, Payload msg, byte[] address);
 }

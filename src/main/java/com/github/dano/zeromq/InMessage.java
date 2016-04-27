@@ -37,7 +37,9 @@ public interface InMessage {
    *
    * @return The payload.
    */
-  byte[] getPayload();
+  Payload getPayload();
+
+  byte[] getControlMessage() throws IllegalStateException;
 
 
   /**

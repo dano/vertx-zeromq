@@ -24,7 +24,7 @@ public interface OutMessage {
    *
    * @return The message.
    */
-  byte[] getMsg();
+  Payload getMsg();
 
   /**
    * Returns true if this OutMessageImpl has a reply address.

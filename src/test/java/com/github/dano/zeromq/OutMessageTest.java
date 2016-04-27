@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class OutMessageTest {
   private static final byte [] ID = "id".getBytes();
-  private static final byte [] MSG = "test msg".getBytes();
+  private static final PayloadImpl MSG = new PayloadImpl("test msg".getBytes());
   private static final byte [] REPLY_ADDRESS = "testAddress".getBytes();
   public static final String ADDR = "tcp://localhost:5558";
 
@@ -63,7 +63,7 @@ public class OutMessageTest {
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
-    assertEquals(new String(MSG), new String(pull.recv()));
+    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
     assertFalse(pull.hasReceiveMore());
 
   }
@@ -74,7 +74,7 @@ public class OutMessageTest {
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
-    assertEquals(new String(MSG), new String(pull.recv()));
+    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
     assertEquals(new String(REPLY_ADDRESS), new String(pull.recv()));
     assertFalse(pull.hasReceiveMore());
 

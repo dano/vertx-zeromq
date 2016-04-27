@@ -31,19 +31,19 @@ public class OutMessageFactoryImpl implements OutMessageFactory {
     byte[] msg = socket.recv();
     if (socket.hasReceiveMore()) {
       // There's a reply address, so get that too.
-      return new OutMessageImpl(id, msg, socket.recv(0));
+      return new OutMessageImpl(id, new PayloadImpl(msg), socket.recv(0));
     } else {
-      return new OutMessageImpl(id, msg);
+      return new OutMessageImpl(id, new PayloadImpl(msg));
     }
   }
 
   @Override
-  public OutMessage fromIdMsg(byte[] id, byte[] msg) {
-    return new OutMessageImpl(id, msg);
+  public OutMessage fromIdMsg(byte[] id, Payload msg) {
+    return new OutMessageImpl(id, (PayloadImpl) msg);
   }
 
   @Override
-  public OutMessage fromIdMsgAddress(byte[] id, byte[] msg, byte[] address) {
-    return new OutMessageImpl(id, msg, address);
+  public OutMessage fromIdMsgAddress(byte[] id, Payload msg, byte[] address) {
+    return new OutMessageImpl(id, (PayloadImpl) msg, address);
   }
 }

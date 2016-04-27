@@ -11,7 +11,7 @@ import io.vertx.core.logging.LoggerFactory;
 public class OutMessageImpl implements OutMessage {
   private static final Logger LOG = LoggerFactory.getLogger(OutMessageImpl.class);
   private byte[] id;
-  private byte[] msg;
+  private PayloadImpl msg;
   private byte[] replyAddress;
   private OutMessageType type;
 
@@ -26,7 +26,7 @@ public class OutMessageImpl implements OutMessage {
    * @param id The socket ID.
    * @param msg The message.
    */
-  public OutMessageImpl(byte[] id, byte[] msg) {
+  public OutMessageImpl(byte[] id, PayloadImpl msg) {
     this.id = id;
     this.msg = msg;
     type = OutMessageType.NON_REPLIABLE;
@@ -39,7 +39,7 @@ public class OutMessageImpl implements OutMessage {
    * @param msg The message.
    * @param replyAddress The reply address.
    */
-  public OutMessageImpl(byte[] id, byte[] msg, byte[] replyAddress) {
+  public OutMessageImpl(byte[] id, PayloadImpl msg, byte[] replyAddress) {
     this.id = id;
     this.msg = msg;
     this.replyAddress = replyAddress;
@@ -60,7 +60,7 @@ public class OutMessageImpl implements OutMessage {
    *
    * @return The message.
    */
-  public byte[] getMsg() {
+  public Payload getMsg() {
     return msg;
   }
 
@@ -90,7 +90,7 @@ public class OutMessageImpl implements OutMessage {
    */
   public void sendMessage(ZMQ.Socket socket) {
     socket.send(id, ZMQ.SNDMORE);
-    socket.send(msg, isRepliable() ? ZMQ.SNDMORE : 0);
+    socket.send(msg.getMsg(), isRepliable() ? ZMQ.SNDMORE : 0);
     if (isRepliable()) {
       socket.send(replyAddress, 0);
     }
