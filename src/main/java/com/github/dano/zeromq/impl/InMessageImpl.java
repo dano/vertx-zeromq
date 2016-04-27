@@ -59,19 +59,6 @@ public class InMessageImpl implements InMessage {
   }
 
   /**
-   * Serialize the InMessageImpl and send it out over a ZMQ.Socket.
-   *
-   * @param socket The socket to send the InMessageImpl to.
-   */
-  public void sendMessage(ZMQ.Socket socket) {
-    socket.send(id, ZMQ.SNDMORE);
-    if (!isControl()) {
-      socket.send(address, ZMQ.SNDMORE);
-    }
-    socket.send(payload.getMsg(), 0);
-  }
-
-  /**
    * Returns true if this InMessageImpl is InMessageType.CONTROL.
    *
    * @return true if its a CONTROL InMessageImpl, false otherwise.

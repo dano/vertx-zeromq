@@ -19,13 +19,6 @@ public interface InMessage {
   boolean isControl();
 
   /**
-   * Serialize the InMessage and send it out over a ZMQ.Socket.
-   *
-   * @param socket The socket to send the InMessage to.
-   */
-  void sendMessage(ZMQ.Socket socket);
-
-  /**
    * Get the id of the InMessage.
    *
    * @return The id.

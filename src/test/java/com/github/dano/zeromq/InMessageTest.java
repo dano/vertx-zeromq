@@ -58,25 +58,4 @@ public class InMessageTest {
     assertEquals(ADDRESS, msg.getAddress());
   }
 
-  @Test(timeout = 4000L)
-  public void testSendMessageNoReply() throws InterruptedException {
-    InMessageImpl msg = new InMessageImpl(ID, MSG);
-    Thread.sleep(500);
-    msg.sendMessage(push);
-    assertEquals(new String(ID), new String(pull.recv()));
-    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
-    assertFalse(pull.hasReceiveMore());
-
-  }
-
-  @Test(timeout = 4000L)
-  public void testSendMessageWithReply() throws InterruptedException {
-    InMessageImpl msg = new InMessageImpl(ID, ADDRESS, MSG);
-    Thread.sleep(500);
-    msg.sendMessage(push);
-    assertEquals(new String(ID), new String(pull.recv()));
-    assertEquals(new String(ADDRESS), new String(pull.recv()));
-    assertEquals(new String(MSG.getMsg()), new String(pull.recv()));
-    assertFalse(pull.hasReceiveMore());
-  }
 }
