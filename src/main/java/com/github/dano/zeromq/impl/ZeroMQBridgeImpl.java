@@ -55,27 +55,22 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
   }
 
   @Override
-  protected void handleRequest(InMessage inMessage, MessageResponder responder) {
-    LOG.debug("Got msg {0}", inMessage);
-    if (inMessage.isControl()) {
-      handleControlMessage(inMessage, responder);
+  protected void handleUserMessage(InMessage inMessage, MessageResponder responder) {
+    if (handlerSocketIds.contains(responder.getSocketId())) {
+      LOG.info("Sending message to " + inMessage.getAddressAsString());
+      vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getPayload());
     } else {
-      if (handlerSocketIds.contains(responder.getSocketId())) {
-        LOG.info("Sending message to " + inMessage.getAddressAsString());
-        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getPayload());
-      } else {
-        DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
-        LOG.info("Sending message to " + inMessage.getAddressAsString());
-        vertx.eventBus().<Payload>send(inMessage.getAddressAsString(),
-            inMessage.getPayload(), options,
-            event -> {
-              if (event.succeeded()) {
-                sendSuccessResponse(event.result(), responder);
-              } else {
-                sendFailureResponse(event.cause(), responder);
-              }
-            });
-      }
+      DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
+      LOG.info("Sending message to " + inMessage.getAddressAsString());
+      vertx.eventBus().<Payload>send(inMessage.getAddressAsString(),
+          inMessage.getPayload(), options,
+          event -> {
+            if (event.succeeded()) {
+              sendSuccessResponse(event.result(), responder);
+            } else {
+              sendFailureResponse(event.cause(), responder);
+            }
+          });
     }
   }
 

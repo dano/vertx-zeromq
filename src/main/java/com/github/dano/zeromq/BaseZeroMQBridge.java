@@ -40,12 +40,33 @@ public abstract class BaseZeroMQBridge extends AsyncRouter {
     this.vertx = vertx;
   }
 
+  protected abstract void handleUserMessage(InMessage inMessage,
+      final MessageResponder responder);
+
+  /**
+   * Handle an incoming request over the external 0MQ socket.
+   *
+   * @param inMessage The incoming message.
+   * @param responder The responder, used to send a response to the request.
+   */
+  @Override
+  protected void handleRequest(InMessage inMessage, MessageResponder responder) {
+    LOG.debug("Got msg {0}", inMessage);
+    if (inMessage.isControl()) {
+      handleControlMessage(inMessage, responder);
+    } else {
+      handleUserMessage(inMessage, responder);
+    }
+  }
+
+
   /**
    * Handle a control message.
    *
    * @param message The control message.
    * @param responder The MessageResponder associated with the message.
    */
+
   protected void handleControlMessage(InMessage message, final MessageResponder responder) {
     String command = new String(message.getControlMessage());
     if (command.startsWith(REGISTER)) {  // Register.
