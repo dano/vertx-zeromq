@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test InMessage.
+ * Test InMessageImpl.
  */
 public class InMessageTest {
   private static final byte [] ID = "id".getBytes();
@@ -40,25 +40,25 @@ public class InMessageTest {
 
   @Test
   public void testControlInMessage() {
-    InMessage msg = new InMessage(ID, MSG);
+    InMessageImpl msg = new InMessageImpl(ID, MSG);
     assertTrue(msg.isControl());
     assertEquals(ID, msg.getId());
-    assertEquals(MSG, msg.getMsg());
+    assertEquals(MSG, msg.getPayload());
     assertNull(msg.getAddress());
   }
 
   @Test
   public void testNormalInMessage() {
-    InMessage msg = new InMessage(ID, ADDRESS, MSG);
+    InMessageImpl msg = new InMessageImpl(ID, ADDRESS, MSG);
     assertFalse(msg.isControl());
     assertEquals(ID, msg.getId());
-    assertEquals(MSG, msg.getMsg());
+    assertEquals(MSG, msg.getPayload());
     assertEquals(ADDRESS, msg.getAddress());
   }
 
   @Test(timeout = 4000L)
   public void testSendMessageNoReply() throws InterruptedException {
-    InMessage msg = new InMessage(ID, MSG);
+    InMessageImpl msg = new InMessageImpl(ID, MSG);
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
@@ -69,7 +69,7 @@ public class InMessageTest {
 
   @Test(timeout = 4000L)
   public void testSendMessageWithReply() throws InterruptedException {
-    InMessage msg = new InMessage(ID, ADDRESS, MSG);
+    InMessageImpl msg = new InMessageImpl(ID, ADDRESS, MSG);
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));

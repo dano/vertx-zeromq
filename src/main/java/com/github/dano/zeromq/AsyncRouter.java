@@ -25,14 +25,19 @@ public abstract class AsyncRouter {
   private AsyncRouterSocket front;
   private ZMQ.Context ctx;
   private final String address;
+  private final InMessageFactory inMessageFactory;
+  private final OutMessageFactory outMessageFactory;
 
   /**
    * Create an AsyncRouter.
    *
    * @param address The address to listen for external ZMQ connections on.
    */
-  public AsyncRouter(String address) {
+  public AsyncRouter(String address, InMessageFactory inMessageFactory,
+                     OutMessageFactory outMessageFactory) {
     this.address = address;
+    this.inMessageFactory = inMessageFactory;
+    this.outMessageFactory = outMessageFactory;
   }
 
   /**
@@ -50,7 +55,8 @@ public abstract class AsyncRouter {
    */
   public AsyncRouter start() {
     ctx = ZMQ.context(2);
-    front = new AsyncRouterSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND, this::handleRequest);
+    front = new AsyncRouterSocket(ctx, address, INPROC_ZMQ_ASYNC_BACKEND, inMessageFactory,
+                                  outMessageFactory, this::handleRequest);
     new Thread(front).start();
     return this;
   }

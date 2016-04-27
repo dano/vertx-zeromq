@@ -2,6 +2,7 @@ package com.github.dano.zeromq.vertx;
 
 import com.github.dano.zeromq.AsyncRouter;
 import com.github.dano.zeromq.InMessage;
+import com.github.dano.zeromq.InMessageFactoryImpl;
 import com.github.dano.zeromq.MessageResponder;
 
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.dano.zeromq.OutMessageFactoryImpl;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -59,7 +61,7 @@ public class ZeroMQBridge extends AsyncRouter {
    *                        for a given request.
    */
   public ZeroMQBridge(String address, Vertx vertx, final long responseTimeout) {
-    super(address);
+    super(address, new InMessageFactoryImpl(), new OutMessageFactoryImpl());
     this.vertx = vertx;
     this.responseTimeout = responseTimeout;
   }
@@ -71,10 +73,10 @@ public class ZeroMQBridge extends AsyncRouter {
       handleCommand(inMessage, responder);
     } else {
       if (handlerSocketIds.contains(responder.getSocketId())) {
-        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getMsg());
+        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getPayload());
       } else {
         DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
-        vertx.eventBus().<byte[]>send(inMessage.getAddressAsString(), inMessage.getMsg(), options,
+        vertx.eventBus().<byte[]>send(inMessage.getAddressAsString(), inMessage.getPayload(), options,
             event -> {
               if (event.succeeded()) {
                 sendSuccessResponse(event.result(), responder);
@@ -112,7 +114,7 @@ public class ZeroMQBridge extends AsyncRouter {
    * @param responder The MessageResponder associated with the message.
    */
   private void handleCommand(InMessage message, final MessageResponder responder) {
-    String command = new String(message.getMsg());
+    String command = new String(message.getPayload());
     if (command.startsWith(REGISTER)) {  // Register.
       final String address = command.substring(REG_LENGTH);
       LOG.debug("Registering handler at address {0}", address);

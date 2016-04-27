@@ -4,13 +4,14 @@ import org.zeromq.ZMQ;
 
 /**
  * Used to send a response to a message once its been processed. The
- * message will be packaged into an OutMessage and sent to the blocking
+ * message will be packaged into an OutMessageImpl and sent to the blocking
  * 0MQ thread via a ZMQ PUSH Socket.
  */
 public class MessageResponder {
   private final byte[] id;
   private final String mAddress;
   private final ZMQ.Context ctx;
+  private final OutMessageFactory outMessageFactory;
 
   /**
    * Create a MessageResponder. Note that the PUSH socket can't be
@@ -22,10 +23,12 @@ public class MessageResponder {
    * @param ctx The ZMQ context to use for socket creation.
    * @param mAddress The address to connect ZMQ response sockets to.
    */
-  public MessageResponder(byte[] id, ZMQ.Context ctx, String mAddress) {
+  public MessageResponder(byte[] id, ZMQ.Context ctx, String mAddress,
+                          OutMessageFactory outMessageFactory) {
     this.id = id;
     this.ctx = ctx;
     this.mAddress = mAddress;
+    this.outMessageFactory = outMessageFactory;
   }
 
   /**
@@ -45,7 +48,7 @@ public class MessageResponder {
   public void respond(byte[] msg) {
     ZMQ.Socket sock = getReplySocket();
     try {
-      new OutMessage(id, msg).sendMessage(sock);
+      outMessageFactory.fromIdMsg(id, msg).sendMessage(sock);
     } finally {
       sock.close();
     }
@@ -60,7 +63,7 @@ public class MessageResponder {
   public void respond(byte[] msg, byte[] address) {
     ZMQ.Socket sock = getReplySocket();
     try {
-      new OutMessage(id, msg, address).sendMessage(sock);
+      outMessageFactory.fromIdMsgAddress(id, msg, address).sendMessage(sock);
     } finally {
       sock.close();
     }

@@ -27,6 +27,8 @@ public class AsyncRouterSocket implements Runnable {
   private boolean running = true;
   private ZMQ.Context ctx;
   private CountDownLatch shutdownLatch = new CountDownLatch(1);
+  private final InMessageFactory inMessageFactory;
+  private final OutMessageFactory outMessageFactory;
   private final BiConsumer<InMessage, MessageResponder> handleBlockingRequest;
 
   /**
@@ -35,13 +37,19 @@ public class AsyncRouterSocket implements Runnable {
    * @param ctx The ZMQ socket to use.
    * @param frontendAddress The address to use for the frontend.
    * @param backendAddress The address to use for the backend.
+   * @param inMessageFactory A factory for creating InMessages.
+   * @param outMessageFactory A factory for creating OutMessages.
    * @param handleBlockingRequest The function to use to handle received requests.
    */
   public AsyncRouterSocket(ZMQ.Context ctx, String frontendAddress, String backendAddress,
+                           InMessageFactory inMessageFactory,
+                           OutMessageFactory outMessageFactory,
                            BiConsumer<InMessage, MessageResponder> handleBlockingRequest) {
     this.frontendAddress = frontendAddress;
     this.backendAddress = backendAddress;
     this.ctx = ctx;
+    this.inMessageFactory = inMessageFactory;
+    this.outMessageFactory = outMessageFactory;
     this.handleBlockingRequest = handleBlockingRequest;
   }
 
@@ -67,14 +75,15 @@ public class AsyncRouterSocket implements Runnable {
       poller.poll(1000);
 
       if (poller.pollin(0)) {
-        InMessage msg = InMessage.fromSocket(server);
+        InMessage msg = inMessageFactory.fromSocket(server);
         // Broker it
-        handleBlockingRequest.accept(msg, new MessageResponder(msg.getId(), ctx, backendAddress));
+        handleBlockingRequest.accept(msg, new MessageResponder(msg.getId(), ctx,
+            backendAddress, outMessageFactory));
       }
 
       if (poller.pollin(1)) {
         // receive message
-        OutMessage.fromSocket(pull).sendMessage(server);
+        outMessageFactory.fromSocket(pull).sendMessage(server);
       }
     }
     server.close();

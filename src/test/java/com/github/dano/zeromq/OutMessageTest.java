@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test OutMessage.
+ * Test OutMessageImpl.
  */
 public class OutMessageTest {
   private static final byte [] ID = "id".getBytes();
@@ -41,7 +41,7 @@ public class OutMessageTest {
 
   @Test
   public void testOutMessageWithoutReply() {
-    OutMessage msg = new OutMessage(ID, MSG);
+    OutMessage msg = new OutMessageImpl(ID, MSG);
     assertFalse(msg.isRepliable());
     assertEquals(ID, msg.getId());
     assertEquals(MSG, msg.getMsg());
@@ -50,7 +50,7 @@ public class OutMessageTest {
 
   @Test
   public void testOutMessageWithReply() {
-    OutMessage msg = new OutMessage(ID, MSG, REPLY_ADDRESS);
+    OutMessage msg = new OutMessageImpl(ID, MSG, REPLY_ADDRESS);
     assertTrue(msg.isRepliable());
     assertEquals(ID, msg.getId());
     assertEquals(MSG, msg.getMsg());
@@ -59,7 +59,7 @@ public class OutMessageTest {
 
   @Test(timeout = 4000L)
   public void testSendMessageNoReply() throws InterruptedException {
-    OutMessage msg = new OutMessage(ID, MSG);
+    OutMessage msg = new OutMessageImpl(ID, MSG);
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));
@@ -70,7 +70,7 @@ public class OutMessageTest {
 
   @Test(timeout = 4000L)
   public void testSendMessageWithReply() throws InterruptedException {
-    OutMessage msg = new OutMessage(ID, MSG, REPLY_ADDRESS);
+    OutMessage msg = new OutMessageImpl(ID, MSG, REPLY_ADDRESS);
     Thread.sleep(500);
     msg.sendMessage(push);
     assertEquals(new String(ID), new String(pull.recv()));

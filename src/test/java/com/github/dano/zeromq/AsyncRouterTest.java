@@ -18,10 +18,11 @@ public class AsyncRouterTest {
 
   @Before
   public void before() {
-    echo = new AsyncRouter("tcp://*:5558") {
+    echo = new AsyncRouter("tcp://*:5558", new InMessageFactoryImpl(),
+                           new OutMessageFactoryImpl()) {
       @Override
       protected void handleRequest(InMessage message, MessageResponder responder) {
-        responder.respond(message.getMsg());
+        responder.respond(message.getPayload());
       }
     };
     echo.start();
