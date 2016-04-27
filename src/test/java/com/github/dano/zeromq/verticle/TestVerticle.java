@@ -15,9 +15,8 @@ public class TestVerticle extends AbstractVerticle {
   public void start() {
     vertx.eventBus().<PayloadImpl>consumer(CHANNEL, msg -> {
       JsonObject json = new JsonObject(new String(msg.body().getMsg()));
-      DeliveryOptions options = new DeliveryOptions().setCodecName("payloadImpl");
-      vertx.eventBus().send(json.getString("replyChannel"), new PayloadImpl(REPLY.getBytes()),
-          options);
+      vertx.eventBus().send(json.getString("replyChannel"),
+          new PayloadImpl(REPLY.getBytes()));
     });
   }
 }

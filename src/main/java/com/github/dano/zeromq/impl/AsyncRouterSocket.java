@@ -1,5 +1,14 @@
-package com.github.dano.zeromq;
+/*
+ * This is the confidential unpublished intellectual property of EMC Corporation,
+ * and includes without limitation exclusive copyright and trade secret rights
+ * of EMC throughout the world.
+ */
+package com.github.dano.zeromq.impl;
 
+import com.github.dano.zeromq.InMessage;
+import com.github.dano.zeromq.InMessageFactory;
+import com.github.dano.zeromq.MessageResponder;
+import com.github.dano.zeromq.OutMessageFactory;
 import org.zeromq.ZMQ;
 
 import java.util.concurrent.CountDownLatch;

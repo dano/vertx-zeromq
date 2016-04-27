@@ -85,7 +85,7 @@ public abstract class BaseZeroMQBridge extends AsyncRouter {
    * Unregister a handler.
    *
    * @param address The handler to unregister
-   * @param socketId THe socketID of the handler to unregister.
+   * @param socketId The socketID of the handler to unregister.
    */
   private void unregister(String address, byte[] socketId) {
     if (address != null && zmqHandlers.containsKey(address)) {

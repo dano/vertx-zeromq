@@ -1,5 +1,6 @@
 package com.github.dano.zeromq;
 
+import com.github.dano.zeromq.impl.AsyncRouterSocket;
 import org.zeromq.ZMQ;
 
 import io.vertx.core.logging.Logger;

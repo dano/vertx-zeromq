@@ -5,11 +5,10 @@
  */
 package com.github.dano.zeromq.impl;
 
+import com.github.dano.zeromq.BaseZeroMQBridge;
 import com.github.dano.zeromq.InMessage;
 import com.github.dano.zeromq.MessageResponder;
 import com.github.dano.zeromq.Payload;
-import com.github.dano.zeromq.BaseZeroMQBridge;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
@@ -37,7 +36,7 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
    * @param vertx The vertx instance.
    */
   public ZeroMQBridgeImpl(String address, Vertx vertx) {
-    this(address, vertx, 5000);
+    this(address, vertx, 10000);
   }
 
   /**
@@ -52,7 +51,7 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
   public ZeroMQBridgeImpl(String address, Vertx vertx, final long responseTimeout) {
     super(vertx, address, new InMessageFactoryImpl(), new OutMessageFactoryImpl());
     this.responseTimeout = responseTimeout;
-    vertx.eventBus().registerCodec(new PayloadImplMessageCodec());
+    vertx.eventBus().registerDefaultCodec(PayloadImpl.class, new PayloadImplMessageCodec());
   }
 
   @Override
@@ -61,13 +60,11 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
     if (inMessage.isControl()) {
       handleControlMessage(inMessage, responder);
     } else {
-      DeliveryOptions options = new DeliveryOptions().setCodecName("payloadImpl");
       if (handlerSocketIds.contains(responder.getSocketId())) {
         LOG.info("Sending message to " + inMessage.getAddressAsString());
-        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getPayload(),
-            options);
+        vertx.eventBus().send(inMessage.getAddressAsString(), inMessage.getPayload());
       } else {
-        options.setSendTimeout(responseTimeout);
+        DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
         LOG.info("Sending message to " + inMessage.getAddressAsString());
         vertx.eventBus().<Payload>send(inMessage.getAddressAsString(),
             inMessage.getPayload(), options,
@@ -75,13 +72,19 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
               if (event.succeeded()) {
                 sendSuccessResponse(event.result(), responder);
               } else {
-                sendFailureResponse(responder, event);
+                sendFailureResponse(event.cause(), responder);
               }
             });
       }
     }
   }
 
+  /**
+   * Send a successful response to a ZeroMQ client.
+   *
+   * @param msg The EventBus message containing the response payload.
+   * @param responder The message responder.
+   */
   private void sendSuccessResponse(Message<Payload> msg, MessageResponder responder) {
     String replyAddress = msg.replyAddress();
     if (replyAddress == null) {
@@ -91,15 +94,20 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
     }
   }
 
-  private void sendFailureResponse(MessageResponder responder,
-      AsyncResult<Message<Payload>> event) {
-    LOG.error("Send failed", event.cause());
-    if (event.cause() instanceof ReplyException) {
-      ReplyException ex = (ReplyException) event.cause();
+  /**
+   * Send a failure response to a ZeroMQ socket.
+   *
+   * @param throwable The throwable containing the failure.
+   * @param responder The message responder.
+   */
+  private void sendFailureResponse(Throwable throwable, MessageResponder responder) {
+    LOG.error("Send failed", throwable);
+    if (throwable instanceof ReplyException) {
+      ReplyException ex = (ReplyException) throwable;
       responder.respond(new PayloadImpl(ex.failureType().name().getBytes()));
     } else {
       responder.respond(new PayloadImpl(
-          ("Unknown error: " + event.cause().getMessage()).getBytes()));
+          ("Unknown error: " + throwable.getMessage()).getBytes()));
     }
   }
 }
