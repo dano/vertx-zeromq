@@ -22,6 +22,7 @@ public class MessageResponder {
    * @param id The socket id associated with this message.
    * @param ctx The ZMQ context to use for socket creation.
    * @param mAddress The address to connect ZMQ response sockets to.
+   * @param outMessageFactory A factory for creating OutMessages.
    */
   public MessageResponder(byte[] id, ZMQ.Context ctx, String mAddress,
                           OutMessageFactory outMessageFactory) {

@@ -35,6 +35,8 @@ public abstract class AsyncRouter {
    * Create an AsyncRouter.
    *
    * @param address The address to listen for external ZMQ connections on.
+   * @param inMessageFactory A factory for creating InMessages.
+   * @param outMessageFactory A factory for creating OutMessages.
    */
   public AsyncRouter(String address, InMessageFactory inMessageFactory,
                      OutMessageFactory outMessageFactory) {
