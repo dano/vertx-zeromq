@@ -1,4 +1,4 @@
-package com.github.dano.zeromq.vertx;
+package com.github.dano.zeromq.verticle;
 
 import org.zeromq.ZMQ;
 

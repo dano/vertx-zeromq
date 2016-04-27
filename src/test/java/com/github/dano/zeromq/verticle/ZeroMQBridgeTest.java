@@ -1,5 +1,6 @@
-package com.github.dano.zeromq.vertx;
+package com.github.dano.zeromq.verticle;
 
+import com.github.dano.zeromq.impl.ZeroMQBridge;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,8 +8,8 @@ import org.zeromq.ZMQ;
 
 import io.vertx.core.Vertx;
 
-import static com.github.dano.zeromq.vertx.ZeroMQBridge.REGISTER;
-import static com.github.dano.zeromq.vertx.ZeroMQBridge.UNREGISTER;
+import static com.github.dano.zeromq.impl.ZeroMQBridge.REGISTER;
+import static com.github.dano.zeromq.impl.ZeroMQBridge.UNREGISTER;
 import static org.junit.Assert.assertEquals;
 
 /**

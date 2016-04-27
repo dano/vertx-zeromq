@@ -1,9 +1,7 @@
-package com.github.dano.zeromq.vertx;
+package com.github.dano.zeromq.verticle;
 
-import com.github.dano.zeromq.PayloadImpl;
-import com.github.dano.zeromq.PayloadImplMessageCodec;
+import com.github.dano.zeromq.impl.PayloadImpl;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 

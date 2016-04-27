@@ -1,5 +1,6 @@
-package com.github.dano.zeromq.vertx;
+package com.github.dano.zeromq.verticle;
 
+import com.github.dano.zeromq.impl.ZeroMQBridge;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

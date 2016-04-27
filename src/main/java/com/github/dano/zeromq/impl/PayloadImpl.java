@@ -3,7 +3,9 @@
  * and includes without limitation exclusive copyright and trade secret rights
  * of EMC throughout the world.
  */
-package com.github.dano.zeromq;
+package com.github.dano.zeromq.impl;
+
+import com.github.dano.zeromq.Payload;
 
 /**
  * TODO comment me

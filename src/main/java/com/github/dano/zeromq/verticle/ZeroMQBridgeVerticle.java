@@ -1,5 +1,6 @@
-package com.github.dano.zeromq.vertx;
+package com.github.dano.zeromq.verticle;
 
+import com.github.dano.zeromq.impl.ZeroMQBridge;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;

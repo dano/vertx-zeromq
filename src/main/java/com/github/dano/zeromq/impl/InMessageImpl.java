@@ -1,6 +1,13 @@
-package com.github.dano.zeromq;
+/*
+ * This is the confidential unpublished intellectual property of EMC Corporation,
+ * and includes without limitation exclusive copyright and trade secret rights
+ * of EMC throughout the world.
+ */
+package com.github.dano.zeromq.impl;
 
 
+import com.github.dano.zeromq.InMessage;
+import com.github.dano.zeromq.Payload;
 import org.zeromq.ZMQ;
 
 /**
@@ -31,7 +38,7 @@ public class InMessageImpl implements InMessage {
    *  @param id The id
    * @param payload The payload.
    */
-  InMessageImpl(byte[] id, PayloadImpl payload) {
+  public InMessageImpl(byte[] id, PayloadImpl payload) {
     this.id = id;
     this.payload = payload;
     this.address = null;
@@ -44,7 +51,7 @@ public class InMessageImpl implements InMessage {
    * @param address The destination Event Bus address.
    * @param payload The message contents.
    */
-  InMessageImpl(byte[] id, byte[] address, PayloadImpl payload) {
+  public InMessageImpl(byte[] id, byte[] address, PayloadImpl payload) {
     this.id = id;
     this.address = address;
     this.payload = payload;

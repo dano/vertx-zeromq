@@ -1,12 +1,14 @@
-package com.github.dano.zeromq.vertx;
+/*
+ * This is the confidential unpublished intellectual property of EMC Corporation,
+ * and includes without limitation exclusive copyright and trade secret rights
+ * of EMC throughout the world.
+ */
+package com.github.dano.zeromq.impl;
 
 import com.github.dano.zeromq.InMessage;
-import com.github.dano.zeromq.InMessageFactoryImpl;
 import com.github.dano.zeromq.MessageResponder;
-import com.github.dano.zeromq.OutMessageFactoryImpl;
 import com.github.dano.zeromq.Payload;
-import com.github.dano.zeromq.PayloadImpl;
-import com.github.dano.zeromq.PayloadImplMessageCodec;
+import com.github.dano.zeromq.BaseZeroMQBridge;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;

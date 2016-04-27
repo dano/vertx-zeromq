@@ -1,5 +1,7 @@
 package com.github.dano.zeromq;
 
+import com.github.dano.zeromq.impl.InMessageFactoryImpl;
+import com.github.dano.zeromq.impl.OutMessageFactoryImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
