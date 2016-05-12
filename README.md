@@ -22,6 +22,14 @@ The Bridge is started by deploying the `ZeroMQBridgeVerticle`. The verticle requ
 * Register a ZeroMQ handler by sending a single message 'register:myHandlerName'
 * Unregister a ZeroMQ handler by sending a single message 'unregister:myHandlerName'.
 
+### Installing via Maven
+```xml
+<dependency>
+  <groupId>com.github.dano</groupId>
+  <artifactId>vertx-zeromq</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 ### Calling an event bus handler
 
