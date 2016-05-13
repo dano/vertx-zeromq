@@ -7,11 +7,16 @@ package com.github.dano.zeromq.impl;
 
 import com.github.dano.zeromq.BaseZeroMQBridge;
 import com.github.dano.zeromq.InMessage;
+import com.github.dano.zeromq.InMessageFactory;
 import com.github.dano.zeromq.MessageResponder;
+import com.github.dano.zeromq.OutMessageFactory;
 import com.github.dano.zeromq.Payload;
+import com.github.dano.zeromq.PayloadFactory;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.eventbus.ReplyException;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -28,6 +33,7 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
   private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridgeImpl.class);
 
   private final long responseTimeout;
+  protected final PayloadFactory<?> payloadFactory;
 
   /**
    * Create a ZeroMQBridge.
@@ -49,9 +55,17 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
    *                        for a given request.
    */
   public ZeroMQBridgeImpl(String address, Vertx vertx, final long responseTimeout) {
-    super(vertx, address, new InMessageFactoryImpl(), new OutMessageFactoryImpl());
+    this(address, vertx, responseTimeout, new PayloadFactoryImpl(), new PayloadImplMessageCodec(),
+        new InMessageFactoryImpl(), new OutMessageFactoryImpl());
+  }
+
+  public <T> ZeroMQBridgeImpl(String address, Vertx vertx, final long responseTimeout,
+                          PayloadFactory<T> payloadFactory, MessageCodec<T, T> codec,
+                          InMessageFactory inMessageFactory, OutMessageFactory outMessageFactory) {
+    super(vertx, address, inMessageFactory, outMessageFactory);
+    this.payloadFactory = payloadFactory;
     this.responseTimeout = responseTimeout;
-    vertx.eventBus().registerDefaultCodec(PayloadImpl.class, new PayloadImplMessageCodec());
+    vertx.eventBus().registerDefaultCodec(payloadFactory.getPayloadType(), codec);
   }
 
   @Override
@@ -99,9 +113,9 @@ public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
     LOG.error("Send failed", throwable);
     if (throwable instanceof ReplyException) {
       ReplyException ex = (ReplyException) throwable;
-      responder.respond(new PayloadImpl(ex.failureType().name().getBytes()));
+      responder.respond(payloadFactory.fromBytes(ex.failureType().name().getBytes()));
     } else {
-      responder.respond(new PayloadImpl(
+      responder.respond(payloadFactory.fromBytes(
           ("Unknown error: " + throwable.getMessage()).getBytes()));
     }
   }

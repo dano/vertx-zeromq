@@ -78,7 +78,37 @@ public class ZeroMQBridgeVerticleTest {
             Assert.fail("Deployment failed " + res.result());
           }
         });
+  }
 
+  @Test
+  public void testSendReply(TestContext context) {
+    final Async async = context.async();
+    DeploymentOptions options = new DeploymentOptions()
+        .setConfig(json);
+    vertx.deployVerticle(ZeroMQBridgeVerticle.class.getName(), options,
+        res -> {
+          if (res.succeeded()) {
+            vertx.deployVerticle(TestVerticle.class.getName(), res2 -> {
+              if (res2.succeeded()) {
+                final ZMQ.Context ctx = ZMQ.context(1);
+                final ZMQ.Socket client = ctx.socket(ZMQ.DEALER);
+                final String address = "tcp://localhost:5558";
+                client.connect(address);
+                client.send(TestVerticle.REPLY_CHANNEL.getBytes(), ZMQ.SNDMORE);
+                client.send("a message".getBytes(), 0);
+                byte[] reply = client.recv(0);
+                context.assertEquals(TestVerticle.REPLY, new String(reply));
+                vertx.undeploy(res.result(), v ->
+                    vertx.undeploy(res2.result(), v2 -> async.complete())
+                );
+              } else {
+                Assert.fail("Deployment failed " + res2.result());
+              }
+            });
+          } else {
+            Assert.fail("Deployment failed " + res.result());
+          }
+        });
   }
 
   private static void performClientTests(TestContext context) {
