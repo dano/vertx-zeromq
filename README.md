@@ -115,7 +115,7 @@ Note that the format of the ZeroMQ message the EventBus bridge expects to receiv
 
 ```java
 
-public class ZeroMQBridgeVerticle extends AbstractZeroMQBridgeVerticle {
+public class MyZeroMQBridgeVerticle extends AbstractZeroMQBridgeVerticle {
 
   @Override
   protected ZeroMQBridge getBridgeImpl(String address, long timeout) {
