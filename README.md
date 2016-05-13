@@ -1,7 +1,7 @@
 vertx-zeromq
 ===========
 
-A ZeroMQ Event Bus bridge for Vert.x. This project is a Vert.x 3.x port of Dean Pehrsson-Chapman's [vert-zeromq project](https://github.com/p14n/vert-zeromq), which is Vert.x 2.x only. 
+A ZeroMQ Event Bus bridge for Vert.x. This project started as a Vert.x 3.x port of Dean Pehrsson-Chapman's Vert.x 2.x-only [vert-zeromq project](https://github.com/p14n/vert-zeromq), though the coe has since been refactored significantly.
 
 The ZeroMQ bridge enables you to remotely call a handler on the Vert.x Event Bus using a ZeroMQ socket, receive replies, and reply back. It also allows you to register a ZeroMQ socket as a Vert.x Event Bus handler, receive calls to that Event Bus address on the ZeroMQ socket, and reply back.
 
@@ -27,7 +27,7 @@ The Bridge is started by deploying the `ZeroMQBridgeVerticle`. The verticle requ
 <dependency>
   <groupId>com.github.dano</groupId>
   <artifactId>vertx-zeromq</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
