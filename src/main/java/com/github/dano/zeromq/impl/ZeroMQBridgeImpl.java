@@ -5,7 +5,7 @@
  */
 package com.github.dano.zeromq.impl;
 
-import com.github.dano.zeromq.BaseZeroMQBridge;
+import com.github.dano.zeromq.ZeroMQBridge;
 import com.github.dano.zeromq.InMessage;
 import com.github.dano.zeromq.InMessageFactory;
 import com.github.dano.zeromq.MessageResponder;
@@ -28,7 +28,7 @@ import io.vertx.core.logging.LoggerFactory;
  * Event Bus, and sends responses back to the requester. It also
  * allows ZMQ Sockets to act as Vert.x Event Bus listeners.
  */
-public class ZeroMQBridgeImpl extends BaseZeroMQBridge {
+public class ZeroMQBridgeImpl extends ZeroMQBridge {
 
   private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridgeImpl.class);
 

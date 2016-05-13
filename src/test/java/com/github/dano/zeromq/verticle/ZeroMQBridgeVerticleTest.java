@@ -1,6 +1,6 @@
 package com.github.dano.zeromq.verticle;
 
-import com.github.dano.zeromq.BaseZeroMQBridge;
+import com.github.dano.zeromq.ZeroMQBridge;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -120,7 +120,7 @@ public class ZeroMQBridgeVerticleTest {
     final String msg2 = "message 2";
 
     registered.connect(address);
-    registered.send((BaseZeroMQBridge.REGISTER + channelName).getBytes());
+    registered.send((ZeroMQBridge.REGISTER + channelName).getBytes());
 
     try {
       Thread.sleep(200);

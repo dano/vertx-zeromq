@@ -21,9 +21,9 @@ import java.util.Set;
  * An abstract class that provides event bus registration/unregistration
  * mechanisms for ZeroMQ sockets.
  */
-public abstract class BaseZeroMQBridge extends AsyncRouter {
+public abstract class ZeroMQBridge extends AsyncRouter {
 
-  private final static Logger LOG = LoggerFactory.getLogger(BaseZeroMQBridge.class);
+  private final static Logger LOG = LoggerFactory.getLogger(ZeroMQBridge.class);
 
   public final static String REGISTER = "register:";
   private final static int REG_LENGTH = REGISTER.length();
@@ -34,8 +34,8 @@ public abstract class BaseZeroMQBridge extends AsyncRouter {
   protected final Set<byte[]> handlerSocketIds = new HashSet<>();
   protected final Vertx vertx;
 
-  public BaseZeroMQBridge(Vertx vertx, String address,
-      InMessageFactory inMessageFactory, OutMessageFactory outMessageFactory) {
+  public ZeroMQBridge(Vertx vertx, String address,
+                      InMessageFactory inMessageFactory, OutMessageFactory outMessageFactory) {
     super(address, inMessageFactory, outMessageFactory);
     this.vertx = vertx;
   }
