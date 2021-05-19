@@ -29,7 +29,7 @@ The Bridge is started by deploying the `ZeroMQBridgeVerticle`. The verticle requ
 <dependency>
   <groupId>com.github.dano</groupId>
   <artifactId>vertx-zeromq</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
