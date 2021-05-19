@@ -1,5 +1,6 @@
 package com.github.dano.zeromq;
 
+import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
 
 import java.util.HashSet;
@@ -49,18 +50,18 @@ public class TestClient implements Runnable {
     public void run() {
         try {
             ctx = ZMQ.context(1);
-            client = ctx.socket(ZMQ.DEALER);
+            client = ctx.socket(SocketType.DEALER);
 
             //  Set random identity to make tracing easier
             String identity = String.format("%04X-%04X", rand.nextInt(), rand.nextInt());
             client.setIdentity(identity.getBytes());
             client.connect(address);
 
-            ZMQ.Poller poller = new ZMQ.Poller(1);
+            ZMQ.Poller poller = ctx.poller(1);
             poller.register(client, ZMQ.Poller.POLLIN);
 
             int requestNbr = 0;
-            Set<String> msgOut = new HashSet<String>();
+            Set<String> msgOut = new HashSet<>();
 
             while (running) {
 
@@ -70,7 +71,7 @@ public class TestClient implements Runnable {
                 poller.poll(100);
                 if (poller.pollin(0)) {
 
-                    byte msg[] = client.recv(0);
+                    byte[] msg = client.recv(0);
                     String compare = new String(msg);
                     if(client.hasReceiveMore()){
                         client.recv(0); //not interested in replying

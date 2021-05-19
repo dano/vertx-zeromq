@@ -5,18 +5,14 @@
  */
 package com.github.dano.zeromq.impl;
 
-import com.github.dano.zeromq.AsyncRouterSocket;
-import com.github.dano.zeromq.InMessage;
-import com.github.dano.zeromq.InMessageFactory;
-import com.github.dano.zeromq.MessageResponder;
-import com.github.dano.zeromq.OutMessageFactory;
+import com.github.dano.zeromq.*;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.function.BiConsumer;
-
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 
 /**
  * A broker that has two jobs:
@@ -32,11 +28,11 @@ public class AsyncRouterSocketImpl implements AsyncRouterSocket {
 
   private static final Logger LOG = LoggerFactory.getLogger(AsyncRouterSocketImpl.class);
 
-  private String frontendAddress;
-  private String backendAddress;
+  private final String frontendAddress;
+  private final String backendAddress;
   private boolean running = true;
-  private ZMQ.Context ctx;
-  private CountDownLatch shutdownLatch = new CountDownLatch(1);
+  private final ZMQ.Context ctx;
+  private final CountDownLatch shutdownLatch = new CountDownLatch(1);
   private final InMessageFactory inMessageFactory;
   private final OutMessageFactory outMessageFactory;
   private final BiConsumer<InMessage, MessageResponder> handleBlockingRequest;
@@ -71,13 +67,13 @@ public class AsyncRouterSocketImpl implements AsyncRouterSocket {
    */
   @Override
   public void run() {
-    ZMQ.Socket server = ctx.socket(ZMQ.ROUTER);
+    ZMQ.Socket server = ctx.socket(SocketType.ROUTER);
     server.bind(frontendAddress);
 
-    ZMQ.Socket pull = ctx.socket(ZMQ.PULL);
+    ZMQ.Socket pull = ctx.socket(SocketType.PULL);
     pull.bind(backendAddress);
 
-    ZMQ.Poller poller = new ZMQ.Poller(2);
+    ZMQ.Poller poller = ctx.poller(2);
     poller.register(server, ZMQ.Poller.POLLIN);
     poller.register(pull, ZMQ.Poller.POLLIN);
 

@@ -35,7 +35,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <vertx.version>3.2.1</vertx.version>
+    <vertx.version>4.0.3</vertx.version>
     <maven.compiler.source>1.8</maven.compiler.source>
   </properties>
 
@@ -62,7 +62,7 @@
       <dependency>
           <groupId>org.zeromq</groupId>
           <artifactId>jeromq</artifactId>
-          <version>0.3.5</version>
+          <version>0.5.2</version>
       </dependency>
       <dependency>
           <groupId>io.vertx</groupId>

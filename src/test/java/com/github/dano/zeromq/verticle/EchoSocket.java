@@ -1,5 +1,6 @@
 package com.github.dano.zeromq.verticle;
 
+import org.zeromq.SocketType;
 import org.zeromq.ZMQ;
 
 /**
@@ -16,12 +17,12 @@ public class EchoSocket implements Runnable {
   @Override
   public void run() {
     final ZMQ.Context ctx = ZMQ.context(1);
-    final ZMQ.Socket registered = ctx.socket(ZMQ.DEALER);
+    final ZMQ.Socket registered = ctx.socket(SocketType.DEALER);
     registered.connect(address);
     registered.send(("register:" + handlerName).getBytes());
     System.out.println("registered");
 
-    ZMQ.Poller poller = new ZMQ.Poller(1);
+    ZMQ.Poller poller = ctx.poller(1);
     poller.register(registered);
     int count = 0;
     while (listening) {

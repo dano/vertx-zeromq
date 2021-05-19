@@ -76,7 +76,7 @@ public class ZeroMQBridgeImpl extends ZeroMQBridge {
     } else {
       DeliveryOptions options = new DeliveryOptions().setSendTimeout(responseTimeout);
       LOG.info("Sending message to " + inMessage.getAddressAsString());
-      vertx.eventBus().<Payload>send(inMessage.getAddressAsString(),
+      vertx.eventBus().<Payload>request(inMessage.getAddressAsString(),
           inMessage.getPayload(), options,
           event -> {
             if (event.succeeded()) {
