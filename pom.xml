@@ -35,7 +35,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <vertx.version>4.0.3</vertx.version>
+    <vertx.version>4.5.24</vertx.version>
     <maven.compiler.source>1.8</maven.compiler.source>
   </properties>
 
